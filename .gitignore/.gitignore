@@ -1,0 +1,8 @@
+.vscode/
+.env
+node_modules/
+BaseX/
+omnisharp.json
+UpdateCheck.WinMerge
+tsconfig.tsbuildinfo
+lib/
