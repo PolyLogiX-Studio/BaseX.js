@@ -7,8 +7,8 @@ export class bool4 {
 	public BASE_TYPENAME = "System.Boolean";
 	public flags!: number;
 
-	public get Dimensions(): 3 {
-		return 3;
+	public get Dimensions(): 4 {
+		return 4;
 	}
 	public static get False(): bool4 {
 		return new bool4();
@@ -112,7 +112,7 @@ export class bool4 {
 			this.flags |= x ? 1 : 0;
 			this.flags |= y ? 2 : 0;
 			this.flags |= z ? 4 : 0;
-			this.flags |= z ? 8 : 0;
+			this.flags |= w ? 8 : 0;
 			return;
 		}
 		if (x instanceof bool4) return new bool4(x.x, x.y, x.z, x.w);
