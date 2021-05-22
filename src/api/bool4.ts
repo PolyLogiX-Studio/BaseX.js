@@ -130,7 +130,7 @@ export class bool4 {
 			elements[0].toLowerCase() == "true",
 			elements[1].toLowerCase() == "true",
 			elements[2].toLowerCase() == "true",
-			elements[2].toLowerCase() == "true"
+			elements[3].toLowerCase() == "true"
 		);
 	}
 	public static TryParse(s: string, val: Out<bool4>): boolean {
@@ -147,8 +147,8 @@ export class bool4 {
 		val.Out = new bool4(
 			elements[0].toLowerCase() == "true",
 			elements[1].toLowerCase() == "true",
-			elements[1].toLowerCase() == "true",
-			elements[1].toLowerCase() == "true"
+			elements[2].toLowerCase() == "true",
+			elements[3].toLowerCase() == "true"
 		);
 		return true;
 	}
