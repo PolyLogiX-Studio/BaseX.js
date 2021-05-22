@@ -118,7 +118,7 @@ export class bool3 {
 		val.Out = new bool3(
 			elements[0].toLowerCase() == "true",
 			elements[1].toLowerCase() == "true",
-			elements[1].toLowerCase() == "true"
+			elements[2].toLowerCase() == "true"
 		);
 		return true;
 	}
