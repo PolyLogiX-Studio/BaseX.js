@@ -42,10 +42,12 @@ export class bool2 {
 	public bool2(x: boolean, y: boolean): void;
 	public bool2(flags: number): void;
 	public bool2(xy: bool2): bool2;
-	public bool2(x: boolean | number | bool2, y = false): boolean | void | bool2 {
-		if (x instanceof bool2) {
-			return new bool2(x.x, x.y);
-		}
+	public bool2(
+		x: boolean | number | bool2 = false,
+		y = false
+	): boolean | void | bool2 {
+		if (x instanceof bool2) return new bool2(x.x, x.y);
+
 		if (typeof x === "number") {
 			this.flags = x;
 			return;
@@ -101,45 +103,45 @@ export class bool2 {
 	public static AND(v: bool2, n: boolean): bool2;
 	public static AND(a: bool2, b: bool2): bool2;
 	public static AND(a: bool2 | boolean, b?: bool2 | boolean): bool2 {
-		if (!(a instanceof bool2) && b instanceof bool2) {
+		if (!(a instanceof bool2) && b instanceof bool2)
 			return new bool2(a && b.x, a && b.y);
-		}
-		if (!(b instanceof bool2) && a instanceof bool2) {
+
+		if (!(b instanceof bool2) && a instanceof bool2)
 			return new bool2(b && a.x, b && a.y);
-		}
-		if (a instanceof bool2 && b instanceof bool2) {
+
+		if (a instanceof bool2 && b instanceof bool2)
 			return new bool2(a.x && b.x, a.y && b.y);
-		}
+
 		throw new Error("Invalid Input");
 	}
 	public static OR(n: boolean, v: bool2): bool2;
 	public static OR(v: bool2, n: boolean): bool2;
 	public static OR(a: bool2, b: bool2): bool2;
 	public static OR(a: bool2 | boolean, b?: bool2 | boolean): bool2 {
-		if (!(a instanceof bool2) && b instanceof bool2) {
+		if (!(a instanceof bool2) && b instanceof bool2)
 			return new bool2(a || b.x, a || b.y);
-		}
-		if (!(b instanceof bool2) && a instanceof bool2) {
+
+		if (!(b instanceof bool2) && a instanceof bool2)
 			return new bool2(b || a.x, b || a.y);
-		}
-		if (a instanceof bool2 && b instanceof bool2) {
+
+		if (a instanceof bool2 && b instanceof bool2)
 			return new bool2(a.x || b.x, a.y || b.y);
-		}
+
 		throw new Error("Invalid Input");
 	}
 	public static XOR(n: boolean, v: bool2): bool2;
 	public static XOR(v: bool2, n: boolean): bool2;
 	public static XOR(a: bool2, b: bool2): bool2;
 	public static XOR(a: bool2 | boolean, b?: bool2 | boolean): bool2 {
-		if (!(a instanceof bool2) && b instanceof bool2) {
+		if (!(a instanceof bool2) && b instanceof bool2)
 			return new bool2(a != b.x, a != b.y);
-		}
-		if (!(b instanceof bool2) && a instanceof bool2) {
+
+		if (!(b instanceof bool2) && a instanceof bool2)
 			return new bool2(b != a.x, b != a.y);
-		}
-		if (a instanceof bool2 && b instanceof bool2) {
+
+		if (a instanceof bool2 && b instanceof bool2)
 			return new bool2(a.x != b.x, a.y != b.y);
-		}
+
 		throw new Error("Invalid Input");
 	}
 	public Equals(other: bool2): boolean {
@@ -149,15 +151,18 @@ export class bool2 {
 	public static Equals(v: bool2, n: boolean): bool2;
 	public static Equals(a: bool2, b: bool2): bool2;
 	public static Equals(a: bool2 | boolean, b?: bool2 | boolean): bool2 {
-		if (!(a instanceof bool2) && b instanceof bool2) {
+		if (!(a instanceof bool2) && b instanceof bool2)
 			return new bool2(a == b.x, a == b.y);
-		}
-		if (!(b instanceof bool2) && a instanceof bool2) {
+
+		if (!(b instanceof bool2) && a instanceof bool2)
 			return new bool2(b == a.x, b == a.y);
-		}
-		if (a instanceof bool2 && b instanceof bool2) {
+
+		if (a instanceof bool2 && b instanceof bool2)
 			return new bool2(a.x == b.x, a.y == b.y);
-		}
+
 		throw new Error("Invalid Input");
+	}
+	public GetHashCode(): number {
+		return (+this.x * 397) ^ +this.y;
 	}
 }
