@@ -57,9 +57,14 @@ export class bool3 {
 	constructor(x = false, y = false, z = false) {
 		this.bool3(x, y, z);
 	}
+	public bool3(flags: number): void;
+	public bool3(xy: bool2, y: boolean): void;
+	public bool3(x: boolean, yz: bool2): void;
+	public bool3(x: boolean, y: boolean, z: boolean): void;
+	public bool3(xyz: bool3): bool3;
 	public bool3(
-		x: boolean | number | bool3,
-		y: boolean | bool3 = false,
+		x: boolean | number | bool3 | bool2 = false,
+		y: boolean | bool2 = false,
 		z = false
 	): boolean | void | bool3 {
 		if (typeof x === "number") {
@@ -77,15 +82,13 @@ export class bool3 {
 			this.flags |= z ? 4 : 0;
 			return;
 		}
-		if (x instanceof bool2 && typeof y == "boolean") {
+		if (x instanceof bool2 && typeof y == "boolean")
 			return this.bool3(x.x, x.y, y);
-		}
-		if (typeof x == "boolean" && y instanceof bool2) {
+
+		if (typeof x == "boolean" && y instanceof bool2)
 			return this.bool3(x, y.x, y.y);
-		}
-		if (x instanceof bool3) {
-			return new bool3(x.x, x.y, x.z);
-		}
+
+		if (x instanceof bool3) return new bool3(x.x, x.y, x.z);
 	}
 	public toString(): string {
 		return `[${this.x};${this.y};${this.z}]`;
@@ -129,51 +132,51 @@ export class bool3 {
 		return this.flags == 0;
 	}
 	public static NOT(v: bool3): bool3 {
-		return new bool3(!v.x, !v.y);
+		return new bool3(!v.x, !v.y, !v.z);
 	}
 	public static AND(n: boolean, v: bool3): bool3;
 	public static AND(v: bool3, n: boolean): bool3;
 	public static AND(a: bool3, b: bool3): bool3;
 	public static AND(a: bool3 | boolean, b?: bool3 | boolean): bool3 {
-		if (typeof a == "boolean" && b instanceof bool3) {
+		if (typeof a == "boolean" && b instanceof bool3)
 			return new bool3(a && b.x, a && b.y, a && b.z);
-		}
-		if (typeof b == "boolean" && a instanceof bool3) {
+
+		if (typeof b == "boolean" && a instanceof bool3)
 			return new bool3(b && a.x, b && a.y, b && a.z);
-		}
-		if (a instanceof bool3 && b instanceof bool3) {
+
+		if (a instanceof bool3 && b instanceof bool3)
 			return new bool3(a.x && b.x, a.y && b.y, a.z && b.z);
-		}
+
 		throw new Error("Invalid Input");
 	}
 	public static OR(n: boolean, v: bool3): bool3;
 	public static OR(v: bool3, n: boolean): bool3;
 	public static OR(a: bool3, b: bool3): bool3;
 	public static OR(a: bool3 | boolean, b?: bool3 | boolean): bool3 {
-		if (typeof a == "boolean" && b instanceof bool3) {
+		if (typeof a == "boolean" && b instanceof bool3)
 			return new bool3(a || b.x, a || b.y, a || b.z);
-		}
-		if (typeof b == "boolean" && a instanceof bool3) {
+
+		if (typeof b == "boolean" && a instanceof bool3)
 			return new bool3(b || a.x, b || a.y, b || a.z);
-		}
-		if (a instanceof bool3 && b instanceof bool3) {
+
+		if (a instanceof bool3 && b instanceof bool3)
 			return new bool3(a.x || b.x, a.y || b.y, a.z || b.z);
-		}
+
 		throw new Error("Invalid Input");
 	}
 	public static XOR(n: boolean, v: bool3): bool3;
 	public static XOR(v: bool3, n: boolean): bool3;
 	public static XOR(a: bool3, b: bool3): bool3;
 	public static XOR(a: bool3 | boolean, b?: bool3 | boolean): bool3 {
-		if (typeof a == "boolean" && b instanceof bool3) {
+		if (typeof a == "boolean" && b instanceof bool3)
 			return new bool3(a != b.x, a != b.y, a != b.z);
-		}
-		if (typeof b == "boolean" && a instanceof bool3) {
+
+		if (typeof b == "boolean" && a instanceof bool3)
 			return new bool3(b != a.x, b != a.y, b != a.z);
-		}
-		if (a instanceof bool3 && b instanceof bool3) {
+
+		if (a instanceof bool3 && b instanceof bool3)
 			return new bool3(a.x != b.x, a.y != b.y, a.z != b.z);
-		}
+
 		throw new Error("Invalid Input");
 	}
 	public Equals(other: bool3): boolean {
@@ -183,15 +186,18 @@ export class bool3 {
 	public static Equals(v: bool3, n: boolean): bool3;
 	public static Equals(a: bool3, b: bool3): bool3;
 	public static Equals(a: bool3 | boolean, b?: bool3 | boolean): bool3 {
-		if (typeof a == "boolean" && b instanceof bool3) {
+		if (typeof a == "boolean" && b instanceof bool3)
 			return new bool3(a == b.x, a == b.y, a == b.z);
-		}
-		if (typeof b == "boolean" && a instanceof bool3) {
+
+		if (typeof b == "boolean" && a instanceof bool3)
 			return new bool3(b == a.x, b == a.y, b == a.z);
-		}
-		if (a instanceof bool3 && b instanceof bool3) {
+
+		if (a instanceof bool3 && b instanceof bool3)
 			return new bool3(a.x == b.x, a.y == b.y, a.z == b.z);
-		}
+
 		throw new Error("Invalid Input");
+	}
+	public GetHashCode(): number {
+		return (((+this.x * 397) ^ +this.y) * 397) ^ +this.z;
 	}
 }
