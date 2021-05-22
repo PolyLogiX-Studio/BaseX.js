@@ -4,4 +4,7 @@ export class MathX {
 		if (val < min) return min;
 		return val >= max ? max - 1 : val;
 	}
+	public static Sqrt(d:number):number{
+		return Math.sqrt(d)
+	}
 }
