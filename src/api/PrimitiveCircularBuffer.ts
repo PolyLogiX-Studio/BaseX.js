@@ -167,8 +167,7 @@ export class PrimitiveCircularBuffer<T> {
 		offset?: number,
 		count?: number
 	): T[] | number {
-		if (target == null) 
-			return this.Get(this.size);
+		if (target == null) return this.Get(this.size);
 
 		if (offset == null) {
 			const t: T[] = [];
