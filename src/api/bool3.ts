@@ -111,7 +111,7 @@ export class bool3 {
 			string,
 			string
 		];
-		if (elements.length != 3) {
+		if (elements == null) {
 			val.Out = new bool3();
 			return false;
 		}
