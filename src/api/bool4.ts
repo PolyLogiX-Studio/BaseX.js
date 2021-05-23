@@ -141,7 +141,7 @@ export class bool4 {
 			string,
 			string
 		];
-		if (elements.length != 4) {
+		if (elements == null) {
 			val.Out = new bool4();
 			return false;
 		}
