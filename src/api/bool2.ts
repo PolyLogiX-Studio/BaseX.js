@@ -77,7 +77,7 @@ export class bool2 {
 			string,
 			string
 		];
-		if (elements.length != 2) {
+		if (elements == null) {
 			val.Out = new bool2();
 			return false;
 		}
