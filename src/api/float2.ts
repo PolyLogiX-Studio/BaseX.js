@@ -112,7 +112,7 @@ export class float2 {
 			string,
 			string
 		];
-		if (elements.length != 2) {
+		if (elements == null) {
 			val.Out = new float2();
 			return false;
 		}
