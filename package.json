@@ -54,6 +54,6 @@
 		"node": ">=14.0.0"
 	},
 	"dependencies": {
-		"@bombitmanbomb/utils": "2.5.0"
+		"@bombitmanbomb/utils": "2.8.3"
 	}
 }
