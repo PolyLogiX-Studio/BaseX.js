@@ -182,10 +182,10 @@ export class bool3 {
 	public Equals(other: bool3): boolean {
 		return this.x == other.x && this.y == other.y && this.z == other.z;
 	}
-	public static Equals(n: boolean, v: bool3): bool3;
-	public static Equals(v: bool3, n: boolean): bool3;
-	public static Equals(a: bool3, b: bool3): bool3;
-	public static Equals(a: bool3 | boolean, b?: bool3 | boolean): bool3 {
+	public static EQUAL(n: boolean, v: bool3): bool3;
+	public static EQUAL(v: bool3, n: boolean): bool3;
+	public static EQUAL(a: bool3, b: bool3): bool3;
+	public static EQUAL(a: bool3 | boolean, b?: bool3 | boolean): bool3 {
 		if (typeof a == "boolean" && b instanceof bool3)
 			return new bool3(a == b.x, a == b.y, a == b.z);
 
