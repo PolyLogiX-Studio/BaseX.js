@@ -216,15 +216,12 @@ export class float2 {
 	public Equals(other: float2): boolean {
 		return this.x == other.x && this.y == other.y;
 	}
-	public static Equals(a: float2, b: number): boolean;
-	public static Equals(a: float2, b: float2): boolean;
-	public static Equals(a: number, b: float2): boolean;
-	public static Equals(
-		a: float2 | number,
-		b: float2 | number
-	): boolean | bool2 {
+	public static EQUAL(a: float2, b: number): bool2;
+	public static EQUAL(a: float2, b: float2): bool2;
+	public static EQUAL(a: number, b: float2): bool2;
+	public static EQUAL(a: float2 | number, b: float2 | number): bool2 {
 		if (a instanceof float2 && b instanceof float2) {
-			return a.x == b.x && a.y == b.y;
+			return new bool2(a.x == b.x, a.y == b.y);
 		}
 		if (typeof a == "number" && b instanceof float2) {
 			return new bool2(b.x == a, b.y == a);
@@ -234,19 +231,19 @@ export class float2 {
 		}
 		throw new Error("Invalid Input");
 	}
-	public static NotEqual(a: float2, b: number): bool2;
-	public static NotEqual(a: number, b: float2): bool2;
-	public static NotEqual(a: float2 | number, b: float2 | number): bool2 {
+	public static NOTEQUAL(a: float2, b: number): bool2;
+	public static NOTEQUAL(a: number, b: float2): bool2;
+	public static NOTEQUAL(a: float2 | number, b: float2 | number): bool2 {
 		if (a instanceof float2 && typeof b == "number")
 			return new bool2(a.x != b, a.y != b);
 		if (typeof a == "number" && b instanceof float2)
 			return new bool2(b.x != a, b.y != a);
 		throw new Error("Invalid input");
 	}
-	public static Greater(a: float2, b: number): bool2;
-	public static Greater(a: float2, b: float2): bool2;
-	public static Greater(a: number, b: float2): bool2;
-	public static Greater(a: float2 | number, b: float2 | number): bool2 {
+	public static GREATER(a: float2, b: number): bool2;
+	public static GREATER(a: float2, b: float2): bool2;
+	public static GREATER(a: number, b: float2): bool2;
+	public static GREATER(a: float2 | number, b: float2 | number): bool2 {
 		if (a instanceof float2 && b instanceof float2) {
 			return new bool2(a.x > b.x, a.y > b.y);
 		}
@@ -258,10 +255,10 @@ export class float2 {
 		}
 		throw new Error("Invalid Input");
 	}
-	public static Less(a: float2, b: number): bool2;
-	public static Less(a: float2, b: float2): bool2;
-	public static Less(a: number, b: float2): bool2;
-	public static Less(a: float2 | number, b: float2 | number): bool2 {
+	public static LESS(a: float2, b: number): bool2;
+	public static LESS(a: float2, b: float2): bool2;
+	public static LESS(a: number, b: float2): bool2;
+	public static LESS(a: float2 | number, b: float2 | number): bool2 {
 		if (a instanceof float2 && b instanceof float2) {
 			return new bool2(a.x < b.x, a.y < b.y);
 		}
@@ -273,10 +270,10 @@ export class float2 {
 		}
 		throw new Error("Invalid Input");
 	}
-	public static GreaterEqual(a: float2, b: number): bool2;
-	public static GreaterEqual(a: float2, b: float2): bool2;
-	public static GreaterEqual(a: number, b: float2): bool2;
-	public static GreaterEqual(a: float2 | number, b: float2 | number): bool2 {
+	public static GREATEREQUAL(a: float2, b: number): bool2;
+	public static GREATEREQUAL(a: float2, b: float2): bool2;
+	public static GREATEREQUAL(a: number, b: float2): bool2;
+	public static GREATEREQUAL(a: float2 | number, b: float2 | number): bool2 {
 		if (a instanceof float2 && b instanceof float2) {
 			return new bool2(a.x >= b.x, a.y >= b.y);
 		}
@@ -288,10 +285,10 @@ export class float2 {
 		}
 		throw new Error("Invalid Input");
 	}
-	public static LessEqual(a: float2, b: number): bool2;
-	public static LessEqual(a: float2, b: float2): bool2;
-	public static LessEqual(a: number, b: float2): bool2;
-	public static LessEqual(a: float2 | number, b: float2 | number): bool2 {
+	public static LESSEQUAL(a: float2, b: number): bool2;
+	public static LESSEQUAL(a: float2, b: float2): bool2;
+	public static LESSEQUAL(a: number, b: float2): bool2;
+	public static LESSEQUAL(a: float2 | number, b: float2 | number): bool2 {
 		if (a instanceof float2 && b instanceof float2) {
 			return new bool2(a.x <= b.x, a.y <= b.y);
 		}
