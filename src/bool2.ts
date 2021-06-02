@@ -147,10 +147,10 @@ export class bool2 {
 	public Equals(other: bool2): boolean {
 		return this.x == other.x && this.y == other.y;
 	}
-	public static Equals(n: boolean, v: bool2): bool2;
-	public static Equals(v: bool2, n: boolean): bool2;
-	public static Equals(a: bool2, b: bool2): bool2;
-	public static Equals(a: bool2 | boolean, b?: bool2 | boolean): bool2 {
+	public static EQUAL(n: boolean, v: bool2): bool2;
+	public static EQUAL(v: bool2, n: boolean): bool2;
+	public static EQUAL(a: bool2, b: bool2): bool2;
+	public static EQUAL(a: bool2 | boolean, b?: bool2 | boolean): bool2 {
 		if (!(a instanceof bool2) && b instanceof bool2)
 			return new bool2(a == b.x, a == b.y);
 
