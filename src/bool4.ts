@@ -213,10 +213,10 @@ export class bool4 {
 	public Equals(other: bool4): boolean {
 		return this.x == other.x && this.y == other.y && this.z == other.z;
 	}
-	public static Equals(n: boolean, v: bool4): bool4;
-	public static Equals(v: bool4, n: boolean): bool4;
-	public static Equals(a: bool4, b: bool4): bool4;
-	public static Equals(a: bool4 | boolean, b?: bool4 | boolean): bool4 {
+	public static EQUAL(n: boolean, v: bool4): bool4;
+	public static EQUAL(v: bool4, n: boolean): bool4;
+	public static EQUAL(a: bool4, b: bool4): bool4;
+	public static EQUAL(a: bool4 | boolean, b?: bool4 | boolean): bool4 {
 		if (typeof a == "boolean" && b instanceof bool4)
 			return new bool4(a == b.x, a == b.y, a == b.z, a == b.w);
 
