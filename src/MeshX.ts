@@ -5,6 +5,7 @@ import { color } from "./color";
 import { float2 } from "./float2";
 import { Submesh } from "./Submesh";
 import { TriangleCollection } from "./TriangleCollection";
+import { Vertex } from "./Vertex";
 export class MeshX {
 	public MESHX_BINARY_VERSION = 6;
 	public MAGIC_STRING = "MeshX";
@@ -39,5 +40,37 @@ export class MeshX {
 			triangleCollection != null
 				? triangleCollection.Count
 				: this.TotalFaceCount;
+	}
+}
+export class UV_Array {
+	public uv_2D!: float2[];
+	public uv_3D!: float3[];
+	public uv_4D!: float4[];
+	public get Dimensions(): number {
+		if (this.uv_2D != null) return 2;
+		if (this.uv_3D != null) return 3;
+		return this.uv_4D != null ? 4 : 0;
+	}
+}
+
+export class VertexEnumerator {
+	private meshx: MeshX;
+	private _index: number;
+	public get Current(): Vertex {
+		return this.meshx.GetVertex(this._index);
+	}
+	constructor(meshx: MeshX) {
+		this.meshx = meshx;
+		this._index = -1;
+	}
+	public Dispose(): void {
+		//VOID
+	}
+	public MoveNext(): boolean {
+		this._index++;
+		return this._index < this.meshx.VertexCount;
+	}
+	public Reset(): void {
+		this._index = -1;
 	}
 }
