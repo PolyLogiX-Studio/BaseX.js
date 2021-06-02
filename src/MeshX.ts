@@ -3,8 +3,8 @@ import { float3 } from "./float3";
 import { float4 } from "./float4";
 import { color } from "./color";
 import { float2 } from "./float2";
-import { Submesh } from './Submesh';
-import { TriangleCollection } from './TriangleCollection';
+import { Submesh } from "./Submesh";
+import { TriangleCollection } from "./TriangleCollection";
 export class MeshX {
 	public MESHX_BINARY_VERSION = 6;
 	public MAGIC_STRING = "MeshX";

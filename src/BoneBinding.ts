@@ -1,3 +1,1 @@
-export class BoneBinding {
-  
-}
+export class BoneBinding {}
