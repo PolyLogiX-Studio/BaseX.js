@@ -5,7 +5,7 @@ import { VertexNormalHandler } from "./VertexNormalHandler";
 import { VertexUVHandler } from "./VertexUVHandler";
 import { TangentHandler } from "./TangentHandler";
 import { BasicTangentHandler } from "./BasicTangentHandler";
-import { SMikkTSpaceInterface } from './SMikkTSpaceInterface';
+import { SMikkTSpaceInterface } from "./SMikkTSpaceInterface";
 export class MikkGenerator {
 	public static GenerateTangentSpace(
 		faceCount: number,
