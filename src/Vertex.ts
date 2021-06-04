@@ -140,4 +140,150 @@ export class Vertex implements IVertex {
 	public get UV3Unsafe(): float2 {
 		return this.meshx.uv_channels[3].uv_2D[this.index];
 	}
+	public get UV0(): float2 {
+		return this.GetUV(0);
+	}
+	public set UV0(v: float2) {
+		this.SetUV(0, v);
+	}
+	public get UV1(): float2 {
+		return this.GetUV(1);
+	}
+	public set UV1(v: float2) {
+		this.SetUV(1, v);
+	}
+	public get UV2(): float2 {
+		return this.GetUV(2);
+	}
+	public set UV2(v: float2) {
+		this.SetUV(2, v);
+	}
+	public get UV3(): float2 {
+		return this.GetUV(3);
+	}
+	public set UV3(v: float2) {
+		this.SetUV(3, v);
+	}
+	public GetUV(uvChannel: number): float2 {
+		this.UpdateIndex();
+		this.meshx.CheckUV(uvChannel);
+		return this.meshx.GetRawUVs()[this.index];
+	}
+	public GetUV_Auto(uvChannel: number): float4 {
+		this.UpdateIndex();
+		const rawUvArray = this.meshx.TryGetRawUV_Array(uvChannel);
+		if (rawUvArray.uv_2D != null)
+			return new float4(rawUvArray.uv_2D[this.index], 0, 0);
+		if (rawUvArray.uv_3D != null)
+			return new float4(rawUvArray.uv_3D[this.index], 0);
+		return rawUvArray.uv_4D != null
+			? rawUvArray.uv_4D[this.index]
+			: new float4();
+	}
+	public SetUV(uvChannel: number, uv: float2): void {
+		this.UpdateIndex();
+		this.meshx.SetHasUV(uvChannel, true);
+		this.meshx.GetRawUVs(uvChannel)[this.index] = uv;
+	}
+
+	public get FlagUnsafe(): boolean {
+		return this.meshx.flags[this.index];
+	}
+	public set FlagUnsafe(v: boolean) {
+		this.meshx.flags[this.index] = v;
+	}
+	public get Flag(): boolean {
+		this.UpdateIndex();
+		this.meshx.CheckFlags();
+		return this.meshx.flags[this.index];
+	}
+	public set Flag(v: boolean) {
+		this.UpdateIndex();
+		this.meshx.HasFlags = true;
+		this.meshx.flags[this.index] = v;
+	}
+	public GetBlendShapePositionDelta(key: string, frame = 0): float3 {
+		this.UpdateIndex();
+		return this.meshx.GetBlendShape(key).THIS(frame).positions[this.index];
+	}
+
+	public SetBlendShapePositionDelta(
+		key: string,
+		delta: float3,
+		frame = 0
+	): void {
+		this.UpdateIndex();
+		this.meshx.GetBlendShape(key).THIS(frame).positions[this.index] = delta;
+	}
+
+	public GetBlendShapeNormalDelta(key: string, frame = 0): float3 {
+		this.UpdateIndex();
+		return this.meshx.GetBlendShape(key).THIS(frame).normals[this.index];
+	}
+
+	public SetBlendShapeNormalDelta(key: string, delta: float3, frame = 0): void {
+		this.UpdateIndex();
+		this.meshx.GetBlendShape(key).THIS(frame).SetNormalDelta(this.index, delta);
+	}
+
+	public GetBlendShapeTangentDelta(key: string, frame = 0): float3 {
+		this.UpdateIndex();
+		return this.meshx.GetBlendShape(key).THIS(frame).tangents[this.index];
+	}
+
+	public SetBlendShapeTangentDelta(
+		key: string,
+		delta: float3,
+		frame = 0
+	): void {
+		this.UpdateIndex();
+		this.meshx
+			.GetBlendShape(key)
+			.THIS(frame)
+			.SetTangentDelta(this.index, delta);
+	}
+	public SetPosition(value: float3) {
+		this.Position = value;
+	}
+
+	public SetNormal(value: float3) {
+		this.Normal = value;
+	}
+	public SetTangent(value: float3) {
+		this.Tangent = value;
+	}
+
+	public SetTangent4(value: float4) {
+		this.Tangent4 = value;
+	}
+
+	public SetColor(value: color) {
+		this.Color = value;
+	}
+
+	public SetFlag(value: boolean) {
+		this.Flag = value;
+	}
+	/**@intenal */
+	public UpdateIndex(): boolean {
+		if (this.version < 0) {
+			if (this.version != this.meshx.VerticesVersion)
+				throw new Error(
+					"Vertex has been invalidated, index: " + this.index.toString()
+				);
+		} else if (this.version != this.meshx.vertexIDs[this.index]) {
+			const index = this.index;
+			while (this.index > 0 && this.meshx.vertexIDs[this.index] > this.version)
+				this.index++;
+			if (this.meshx.vertexIDs[this.index] != this.version)
+				throw new Error(
+					"Vertex has been removed, original index: " +
+						index.toString() +
+						", version: " +
+						this.version.toString()
+				);
+			return true;
+		}
+		return false;
+	}
 }
