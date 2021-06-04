@@ -24,25 +24,26 @@ export class MikktspaceContext {
 		getVertexUV: VertexUVHandler,
 		setTangentBasic: BasicTangentHandler | null = null,
 		setTangent: TangentHandler | null = null
-	)  {
-    if (faceCount <= 0)
-      throw new EvalError("Face Count must be larger than 0");
-    if (getVerticesPerFace == null)
-      throw new EvalError("All mesh data callbacks must be provided");
-    if (getVertexNormal == null)
-      throw new EvalError("All mesh data callbacks must be provided");
-    if (getVertexUV == null)
-      throw new EvalError("All mesh data callbacks must be provided");
-    if (setTangentBasic == null && setTangent == null)
-      throw new EvalError("Both setTangentBasic and setTangent are null");
-    if (setTangentBasic != null && setTangent != null)
-      throw new EvalError("setTangentBasic and setTangent cannot be used at the same time");
-    this.FaceCount = faceCount;
-    this.GetVerticesPerFace = getVerticesPerFace;
-    this.GetVertexPosition = getVertexPosition;
-    this.GetVertexNormal = getVertexNormal;
-    this.GetVertexUV = getVertexUV;
-    this.SetTangentBasic = setTangentBasic;
-    this.SetTangent = setTangent;
-  }
+	) {
+		if (faceCount <= 0) throw new EvalError("Face Count must be larger than 0");
+		if (getVerticesPerFace == null)
+			throw new EvalError("All mesh data callbacks must be provided");
+		if (getVertexNormal == null)
+			throw new EvalError("All mesh data callbacks must be provided");
+		if (getVertexUV == null)
+			throw new EvalError("All mesh data callbacks must be provided");
+		if (setTangentBasic == null && setTangent == null)
+			throw new EvalError("Both setTangentBasic and setTangent are null");
+		if (setTangentBasic != null && setTangent != null)
+			throw new EvalError(
+				"setTangentBasic and setTangent cannot be used at the same time"
+			);
+		this.FaceCount = faceCount;
+		this.GetVerticesPerFace = getVerticesPerFace;
+		this.GetVertexPosition = getVertexPosition;
+		this.GetVertexNormal = getVertexNormal;
+		this.GetVertexUV = getVertexUV;
+		this.SetTangentBasic = setTangentBasic;
+		this.SetTangent = setTangent;
+	}
 }
