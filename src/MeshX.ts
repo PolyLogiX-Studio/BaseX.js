@@ -13,7 +13,7 @@ import type { VertexUVHandler } from "./util/Mikktspace/VertexUVHandler";
 import type { BasicTangentHandler } from "./util/Mikktspace/BasicTangentHandler";
 import { MikkGenerator } from "./util/Mikktspace/MikkGenerator";
 import { TriangleSubmesh } from "./TriangleSubmesh";
-import { Triangle } from "./Triangle";
+import { Triangle } from './Triangle';
 import { BlendShape } from "./BlendShape";
 export class MeshX {
 	public MESHX_BINARY_VERSION = 6;
@@ -110,7 +110,7 @@ export class MeshX {
 					this.GetTriangleByFaceIndex(face).GetVertexIndexUnsafe(vert)
 				] = new float4(x, y, z, sign))).bind(this);
 		} else {
-			verticesPerFaceHandler = (face) => 3;
+			verticesPerFaceHandler = (face?: number) => 3;
 			vertexPositionHandler = ((
 				face: number,
 				vert: number,
@@ -175,7 +175,7 @@ export class MeshX {
 		);
 	}
 
-	public GetVertices<T>(array: T[], convert: (float3: float3) => T) {
+	public GetVertices<T>(array: T[], convert: (float3: float3) => T):void {
 		if (array.length < this.VertexCount) throw new RangeError("array.length");
 		for (let index = 0; index < this.VertexCount; index++)
 			array[index] = convert(this.positions[index]);
@@ -225,7 +225,7 @@ export class MeshX {
 			}
 			return true;
 		} else {
-			if (array.length! + this.TotalTriangleCount * 3) return false;
+			if (array.length + this.TotalTriangleCount * 3) return false;
 			let arrayOffset1 = 0;
 			for (const submesh of this.submeshes) {
 				if (submesh instanceof TriangleSubmesh) {
@@ -326,6 +326,85 @@ export class MeshX {
 						const local: float3 = frame.RawNormals[index2];
 						frame.RawNormals[index2] = float3.Multiply(local, -1);
 					}
+				}
+			}
+		}
+	}
+
+	public ReverseWinding(): void {
+		for (const submesh of this.submeshes) {
+			if (submesh instanceof TriangleSubmesh) {
+				for (let index = 0; index < submesh.IndicieCount; index += 3) {
+					const rawIndicy = submesh.RawIndicies[index];
+					submesh.RawIndicies[index] = submesh.RawIndicies[index + 2];
+					submesh.RawIndicies[index + 2] = rawIndicy;
+				}
+			}
+		}
+	}
+
+	public MakeDualSided(): void {
+		const vertexCount = this.VertexCount;
+		this.AddVertices(vertexCount);
+		for (let index = 0; index < vertexCount; index++)
+			this.RawPositions[vertexCount + index] = this.RawPositions[index];
+		if (this.HasNormals) {
+			for (let index = 0; index < vertexCount; index++)
+				this.RawNormals[vertexCount + index] = float3.Multiply(
+					this.RawNormals[index],
+					-1
+				);
+		}
+		if (this.HasTangents) {
+			for (let index1 = 0; index1 < vertexCount; index1++) {
+				const rawTangents: float4[] = this.RawTangents;
+				const index2 = vertexCount + index1;
+				rawTangents[index2] = float4.Multiply(
+					new float4(1, 1, 1, -1),
+					this.RawTangents[index1]
+				);
+			}
+		}
+		if (this.HasColors) {
+			for (let index = 0; index < vertexCount; index++)
+				this.RawColors[vertexCount + index] = color.Multiply(
+					this.RawColors[index],
+					-1
+				);
+		}
+		for (let uv = 0; uv < this.UV_ChannelCount; uv++) {
+			switch (this.GetUV_Dimension(uv)) {
+			case 2: {
+				const rawUvs = this.GetRawUVs(uv);
+				for (let index = 0; index < vertexCount; index++)
+					rawUvs[vertexCount + index] = rawUvs[index];
+				break;
+			}
+			case 3: {
+				const rawUvs3D = this.GetRawUVs_3D(uv);
+				for (let index = 0; index < vertexCount; index++)
+					rawUvs3D[vertexCount + index] = rawUvs3D[index];
+				break;
+			}
+			case 4: {
+				const rawUvs4D = this.GetRawUVs_4D(uv);
+				for (let index = 0; index < vertexCount; index++)
+					rawUvs4D[vertexCount + index] = rawUvs4D[index];
+				break;
+			}
+			}
+		}
+		if (this.HasBoneBindings){
+			for (let index = 0; index < vertexCount; index++)
+			this.RawBoneBindings[vertexCount + index] = this.RawBoneBindings[index];
+		}
+		for (let submesh of this.submeshes) {
+			if (submesh instanceof TriangleSubmesh) {
+				let count = submesh.Count
+				submesh.AddTriangles(count)
+				for (let index = 0; index < count; index++){
+					let triangle = submesh.GetTriangle(index)
+					triangleSubmesh1.SetTriangle(count + index, triangle.Vertex2IndexUnsafe + vertexCount, triangle.Vertex1IndexUnsafe + vertexCount, triangle.Vertex0IndexUnsafe + vertexCount);
 				}
 			}
 		}
