@@ -242,26 +242,26 @@ export class Vertex implements IVertex {
 			.THIS(frame)
 			.SetTangentDelta(this.index, delta);
 	}
-	public SetPosition(value: float3) {
+	public SetPosition(value: float3): void {
 		this.Position = value;
 	}
 
-	public SetNormal(value: float3) {
+	public SetNormal(value: float3): void {
 		this.Normal = value;
 	}
-	public SetTangent(value: float3) {
+	public SetTangent(value: float3): void {
 		this.Tangent = value;
 	}
 
-	public SetTangent4(value: float4) {
+	public SetTangent4(value: float4): void {
 		this.Tangent4 = value;
 	}
 
-	public SetColor(value: color) {
+	public SetColor(value: color): void {
 		this.Color = value;
 	}
 
-	public SetFlag(value: boolean) {
+	public SetFlag(value: boolean): void {
 		this.Flag = value;
 	}
 	/**@intenal */
