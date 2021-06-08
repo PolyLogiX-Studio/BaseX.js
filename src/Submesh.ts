@@ -5,8 +5,8 @@ import { float3 } from "./float3";
 import { SubmeshMetadata } from "./SubmeshMetadata";
 export abstract class Submesh {
 	public Mesh!: MeshX;
-	public indicies: number[] = []
-	public primitiveIDs: number[] = []
+	public indicies: number[] = [];
+	public primitiveIDs: number[] = [];
 	private _currentID!: number;
 
 	public abstract Topology: SubmeshTopology;
@@ -14,7 +14,7 @@ export abstract class Submesh {
 	public get Index(): number {
 		return this.Mesh.IndexOfSubmesh(this);
 	}
-	public Count: number = 0;
+	public Count = 0;
 
 	public get IndicieCount(): number {
 		return this.Count * this.IndiciesPerElement;
