@@ -1,11 +1,16 @@
-import { List } from "@bombitmanbomb/utils";
+import { List, Enumerator } from "@bombitmanbomb/utils";
 import { Triangle } from "./Triangle";
 export class TriangleCollection {
 	public _triangles!: List<Triangle>;
 	public get Count(): number {
 		return this._triangles.Count;
 	}
-	//TODO Capacity
+	public get Capacity(): number {
+		return this._triangles.Capacity;
+	}
+	public set Capacity(value: number) {
+		this._triangles.Capacity = value;
+	}
 	public get IsReadOnly(): false {
 		return false;
 	}
@@ -23,7 +28,7 @@ export class TriangleCollection {
 	}
 
 	public TriangleCollection(capacity = 4): void {
-		this._triangles = new List();
+		this._triangles = new List(capacity);
 	}
 
 	public Add(v: Triangle): void {
@@ -36,43 +41,43 @@ export class TriangleCollection {
 		);
 	}
 
-	public Remove(v: Triangle) {
+	public Remove(v: Triangle): void {
 		this._triangles.Remove(v);
 	}
 
-	public RemoveAt(index) {
+	public RemoveAt(index: number): void {
 		this._triangles.RemoveAt(index);
 	}
 
-	public RemoveRange(index, count) {
+	public RemoveRange(index: number, count: number): void {
 		this._triangles.RemoveRange(index, count);
 	}
 
-	public GetEnumerator() {
-		this._triangles.GetEnumerator();
+	public GetEnumerator(): Enumerator<List<Triangle>> {
+		return this._triangles.GetEnumerator();
 	}
 
-	public IndexOf(item) {
-		this._triangles.IndexOf(item);
+	public IndexOf(item: Triangle): void {
+		this._triangles.indexOf(item);
 	}
 
-	public Insert(index, item) {
+	public Insert(index: number, item: Triangle): void {
 		this._triangles.Insert(index, item);
 	}
 
-	public Clear() {
+	public Clear(): void {
 		this._triangles.Clear();
 	}
 
-	public Contains(item) {
-		this._triangles.Contains(item);
+	public Contains(item: Triangle): boolean {
+		return this._triangles.Contains(item);
 	}
 
-	public CopyTo(array, arrayIndex) {
+	public CopyTo(array: List<Triangle>, arrayIndex: number): void {
 		this._triangles.CopyTo(array, arrayIndex);
 	}
 
-	public Clean() {
+	public Clean(): void {
 		this.Clear();
 	}
 }
