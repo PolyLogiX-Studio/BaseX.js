@@ -1,3 +1,3 @@
 export interface IMeshXElement {
-  Index:number
+	Index: number;
 }
