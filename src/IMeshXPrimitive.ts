@@ -1,4 +1,4 @@
-import type { Submesh } from './Submesh';
+import type { Submesh } from "./Submesh";
 export interface IMeshXPrimitive {
-  Submesh:Submesh
+	Submesh: Submesh;
 }
