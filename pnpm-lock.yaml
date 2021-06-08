@@ -3,7 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@babel/core': ^7.12.10
   '@babel/plugin-transform-flow-strip-types': ^7.12.1
-  '@bombitmanbomb/utils': 2.9.0
+  '@bombitmanbomb/utils': 2.9.2
   '@types/minimist': ^1.2.0
   '@types/node': ^15.0.2
   '@types/normalize-package-data': ^2.4.0
@@ -22,7 +22,7 @@ specifiers:
   typescript-eslint: ^0.0.1-alpha.0
 
 dependencies:
-  '@bombitmanbomb/utils': 2.9.0
+  '@bombitmanbomb/utils': 2.9.2
 
 devDependencies:
   '@babel/core': 7.14.0
@@ -298,8 +298,8 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
-  /@bombitmanbomb/utils/2.9.0:
-    resolution: {integrity: sha512-AYyvyc14z2l2qLi4Od4vvrxNJiScX9agSQD7wgPBAvW0n9HY3SiL+HIylBRmtmpAsaMi0TipZAINLqeGsM/ayQ==}
+  /@bombitmanbomb/utils/2.9.2:
+    resolution: {integrity: sha512-mx8tUP7PDXHkHfvX+j6WGQgB7zFWFsfat5MA8gebBi5fwlv6yld85D2SWWmcSWi66A+S6q/SJNzsHp8aAFxUqg==}
     engines: {node: '>=14.0.0'}
     dependencies:
       abort-controller: 3.0.0
