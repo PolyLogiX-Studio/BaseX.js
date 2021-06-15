@@ -13,8 +13,11 @@ import type { VertexUVHandler } from "./util/Mikktspace/VertexUVHandler";
 import type { BasicTangentHandler } from "./util/Mikktspace/BasicTangentHandler";
 import { MikkGenerator } from "./util/Mikktspace/MikkGenerator";
 import { TriangleSubmesh } from "./TriangleSubmesh";
-import { Triangle } from './Triangle';
+import { Triangle } from "./Triangle";
 import { BlendShape } from "./BlendShape";
+import { MathX } from "./MathX";
+import { BoneBinding } from './BoneBinding';
+import { PointSubmesh } from './PointSubmesh';
 export class MeshX {
 	public MESHX_BINARY_VERSION = 6;
 	public MAGIC_STRING = "MeshX";
@@ -68,7 +71,7 @@ export class MeshX {
 			) => {
 				const float: float3 =
 					positions[
-						this.GetTriangleByFaceIndex(face).GetVertexIndexUnsafe(vert)
+					this.GetTriangleByFaceIndex(face).GetVertexIndexUnsafe(vert)
 					];
 				x.Out = float.x;
 				y.Out = float.y;
@@ -106,9 +109,9 @@ export class MeshX {
 				z: number,
 				sign: number
 			) =>
-				(tangents[
-					this.GetTriangleByFaceIndex(face).GetVertexIndexUnsafe(vert)
-				] = new float4(x, y, z, sign))).bind(this);
+			(tangents[
+				this.GetTriangleByFaceIndex(face).GetVertexIndexUnsafe(vert)
+			] = new float4(x, y, z, sign))).bind(this);
 		} else {
 			verticesPerFaceHandler = (face?: number) => 3;
 			vertexPositionHandler = ((
@@ -156,9 +159,9 @@ export class MeshX {
 				z: number,
 				sign: number
 			) =>
-				(tangents[
-					triangles.THIS_GET(face).GetVertexIndexUnsafe(vert)
-				] = new float4(x, y, z, sign))).bind(this);
+			(tangents[
+				triangles.THIS_GET(face).GetVertexIndexUnsafe(vert)
+			] = new float4(x, y, z, sign))).bind(this);
 		}
 		const getVerticesPerFace: VerticesPerFaceHandler = verticesPerFaceHandler;
 		const getPosition: VetrexPositionHandler = vertexPositionHandler;
@@ -175,7 +178,7 @@ export class MeshX {
 		);
 	}
 
-	public GetVertices<T>(array: T[], convert: (float3: float3) => T):void {
+	public GetVertices<T>(array: T[], convert: (float3: float3) => T): void {
 		if (array.length < this.VertexCount) throw new RangeError("array.length");
 		for (let index = 0; index < this.VertexCount; index++)
 			array[index] = convert(this.positions[index]);
@@ -374,40 +377,356 @@ export class MeshX {
 		}
 		for (let uv = 0; uv < this.UV_ChannelCount; uv++) {
 			switch (this.GetUV_Dimension(uv)) {
-			case 2: {
-				const rawUvs = this.GetRawUVs(uv);
-				for (let index = 0; index < vertexCount; index++)
-					rawUvs[vertexCount + index] = rawUvs[index];
-				break;
-			}
-			case 3: {
-				const rawUvs3D = this.GetRawUVs_3D(uv);
-				for (let index = 0; index < vertexCount; index++)
-					rawUvs3D[vertexCount + index] = rawUvs3D[index];
-				break;
-			}
-			case 4: {
-				const rawUvs4D = this.GetRawUVs_4D(uv);
-				for (let index = 0; index < vertexCount; index++)
-					rawUvs4D[vertexCount + index] = rawUvs4D[index];
-				break;
-			}
-			}
-		}
-		if (this.HasBoneBindings){
-			for (let index = 0; index < vertexCount; index++)
-			this.RawBoneBindings[vertexCount + index] = this.RawBoneBindings[index];
-		}
-		for (let submesh of this.submeshes) {
-			if (submesh instanceof TriangleSubmesh) {
-				let count = submesh.Count
-				submesh.AddTriangles(count)
-				for (let index = 0; index < count; index++){
-					let triangle = submesh.GetTriangle(index)
-					triangleSubmesh1.SetTriangle(count + index, triangle.Vertex2IndexUnsafe + vertexCount, triangle.Vertex1IndexUnsafe + vertexCount, triangle.Vertex0IndexUnsafe + vertexCount);
+				case 2: {
+					const rawUvs = this.GetRawUVs(uv);
+					for (let index = 0; index < vertexCount; index++)
+						rawUvs[vertexCount + index] = rawUvs[index];
+					break;
+				}
+				case 3: {
+					const rawUvs3D = this.GetRawUVs_3D(uv);
+					for (let index = 0; index < vertexCount; index++)
+						rawUvs3D[vertexCount + index] = rawUvs3D[index];
+					break;
+				}
+				case 4: {
+					const rawUvs4D = this.GetRawUVs_4D(uv);
+					for (let index = 0; index < vertexCount; index++)
+						rawUvs4D[vertexCount + index] = rawUvs4D[index];
+					break;
 				}
 			}
 		}
+		if (this.HasBoneBindings) {
+			for (let index = 0; index < vertexCount; index++)
+				this.RawBoneBindings[vertexCount + index] = this.RawBoneBindings[index];
+		}
+		for (const submesh of this.submeshes) {
+			if (submesh instanceof TriangleSubmesh) {
+				const count = submesh.Count;
+				submesh.AddTriangles(count);
+				for (let index = 0; index < count; index++) {
+					const triangle = submesh.GetTriangle(index);
+					triangleSubmesh1.SetTriangle(
+						count + index,
+						triangle.Vertex2IndexUnsafe + vertexCount,
+						triangle.Vertex1IndexUnsafe + vertexCount,
+						triangle.Vertex0IndexUnsafe + vertexCount
+					);
+				}
+			}
+		}
+	}
+	public RecalculateNormals(): void
+	public RecalculateNormals(triangles: TriangleCollection, onlyFlagged: boolean, removeFlag: boolean): void
+	public RecalculateNormals(triangles?: TriangleCollection, onlyFlagged = false, removeFlag = false): void {
+		if (triangles == null) {
+
+			this.HasNormals = true;
+			for (let index = 0; index < this.VertexCount; index++) {
+				this.normals[index] = float3.Zero;
+			}
+			for (const triangle of this.Triangles) {
+				const normal: Out<float3> = new Out();
+				if (triangle.TryComputeSurfaceNormalUnsafe(normal)) {
+					this.normals[triangle.Vertex0IndexUnsafe] = float3.Add(
+						this.normals[triangle.Vertex0IndexUnsafe],
+						normal.Out as float3
+					);
+					this.normals[triangle.Vertex1IndexUnsafe] = float3.Add(
+						this.normals[triangle.Vertex1IndexUnsafe],
+						normal.Out as float3
+					);
+					this.normals[triangle.Vertex2IndexUnsafe] = float3.Add(
+						this.normals[triangle.Vertex2IndexUnsafe],
+						normal.Out as float3
+					);
+				}
+			}
+			for (let index = 0; index < this.VertexCount; index++)
+				this.normals[index] = this.normals[index].Normalized;
+		} else {
+			this.HasNormals = true;
+			triangles.UpdateIndexes();
+			for (let triangle of triangles) {
+				if (onlyFlagged) {
+					if (this.flags[triangle.Vertex0IndexUnsafe])
+						this.normals[triangle.Vertex0IndexUnsafe] = float3.Zero;
+					if (this.flags[triangle.Vertex1IndexUnsafe])
+						this.normals[triangle.Vertex1IndexUnsafe] = float3.Zero;
+					if (this.flags[triangle.Vertex2IndexUnsafe])
+						this.normals[triangle.Vertex2IndexUnsafe] = float3.Zero;
+				}
+				else {
+					this.normals[triangle.Vertex0IndexUnsafe] = float3.Zero;
+					this.normals[triangle.Vertex1IndexUnsafe] = float3.Zero;
+					this.normals[triangle.Vertex2IndexUnsafe] = float3.Zero;
+				}
+			}
+			for (let triangle of triangles) {
+				let normal: Out<float3> = new Out;
+				if (triangle.TryComputeSurfaceNormalUnsafe(normal)) {
+					if (onlyFlagged) {
+						if (this.flags[triangle.Vertex0IndexUnsafe]) {
+							this.normals[triangle.Vertex0IndexUnsafe] = float3.Add(
+								this.normals[triangle.Vertex0IndexUnsafe],
+								normal.Out as float3
+							);
+						}
+						if (this.flags[triangle.Vertex1IndexUnsafe]) {
+							this.normals[triangle.Vertex1IndexUnsafe] = float3.Add(
+								this.normals[triangle.Vertex1IndexUnsafe],
+								normal.Out as float3
+							);
+						}
+						if (this.flags[triangle.Vertex2IndexUnsafe]) {
+							this.normals[triangle.Vertex2IndexUnsafe] = float3.Add(
+								this.normals[triangle.Vertex2IndexUnsafe],
+								normal.Out as float3
+							);
+						}
+					}
+					else {
+						this.normals[triangle.Vertex0IndexUnsafe] = float3.Add(
+							this.normals[triangle.Vertex0IndexUnsafe],
+							normal.Out as float3
+						);
+						this.normals[triangle.Vertex1IndexUnsafe] = float3.Add(
+							this.normals[triangle.Vertex1IndexUnsafe],
+							normal.Out as float3
+						);
+						this.normals[triangle.Vertex2IndexUnsafe] = float3.Add(
+							this.normals[triangle.Vertex2IndexUnsafe],
+							normal.Out as float3
+						);
+					}
+				}
+			}
+			for (let triangle of triangles) {
+				if (onlyFlagged) {
+					if (this.flags[triangle.Vertex0IndexUnsafe]) {
+						this.normals[triangle.Vertex0IndexUnsafe] = this.normals[triangle.Vertex0IndexUnsafe].Normalized;
+						if (removeFlag)
+							this.flags[triangle.Vertex0IndexUnsafe] = false;
+					}
+					if (this.flags[triangle.Vertex1IndexUnsafe]) {
+						this.normals[triangle.Vertex1IndexUnsafe] = this.normals[triangle.Vertex1IndexUnsafe].Normalized;
+						if (removeFlag)
+							this.flags[triangle.Vertex1IndexUnsafe] = false;
+					}
+					if (this.flags[triangle.Vertex2IndexUnsafe]) {
+						this.normals[triangle.Vertex2IndexUnsafe] = this.normals[triangle.Vertex2IndexUnsafe].Normalized;
+						if (removeFlag)
+							this.flags[triangle.Vertex2IndexUnsafe] = false;
+					}
+				}
+				else {
+					this.normals[triangle.Vertex0IndexUnsafe] = this.normals[triangle.Vertex0IndexUnsafe].Normalized;
+					this.normals[triangle.Vertex1IndexUnsafe] = this.normals[triangle.Vertex1IndexUnsafe].Normalized;
+					this.normals[triangle.Vertex2IndexUnsafe] = this.normals[triangle.Vertex2IndexUnsafe].Normalized;
+				}
+			}
+		}
+	}
+	public RecalculateNormalsMerged(cellSize = 0.001): void {
+		this.HasNormals = true
+		let multiplier = 1.0 / cellSize
+		let dictionary: Dictionary<int3, float3> = new Dictionary
+		for (let triangle of this.Triangles) {
+			let normal: Out<float3> = new Out
+			if (triangle.TryComputeSurfaceNormalUnsafe(normal)) {
+				let position1 = triangle.Vertex0.PositionUnsafe;
+				let position2 = triangle.Vertex1.PositionUnsafe;
+				let position3 = triangle.Vertex2.PositionUnsafe;
+				MeshX.StoreNormal(dictionary, normal.Out as float3, position1, multiplier);
+				MeshX.StoreNormal(dictionary, normal.Out as float3, position2, multiplier);
+				MeshX.StoreNormal(dictionary, normal.Out as float3, position3, multiplier);
+			}
+		}
+		for (let triangle of this.Triangles) {
+			MeshX.AssignNormal(dictionary, triangle.Vertex0, multiplier);
+			MeshX.AssignNormal(dictionary, triangle.Vertex1, multiplier);
+			MeshX.AssignNormal(dictionary, triangle.Vertex2, multiplier);
+		}
+		//TODO Pool Return
+		for (let index = 0; index < this.VertexCount; index++)
+			this.RawNormals[index] = this.RawNormals[index].Normalized;
+	}
+	public static AssignNormal(normals: Dictionary<int3, float3>, vertex: Vertex, multiplier: number): void {
+		vertex.NormalUnsafe = normals.ReturnValue(MathX.FloorToInt(float3.Multiply(vertex.PositionUnsafe, multiplier)).toString())
+	}
+	public static StoreNormal(normals: Dictionary<number, float3>, normal: float3, position: float3, multiplier: number): void { } //TODO StoreNormal
+	//TODO RecalculateTangents
+	private CalcTangentValues(t: Triangle, uvs: float2[], binorms: float3[]): void {
+		let float3_1 = float3.Subtract(this.positions[t.Vertex1IndexUnsafe], this.positions[t.Vertex0IndexUnsafe])
+		let float3_2 = float3.Subtract(this.positions[t.Vertex2IndexUnsafe], this.positions[t.Vertex0IndexUnsafe])
+		let float2_1 = float2.Subtract(uvs[t.Vertex1IndexUnsafe], uvs[t.Vertex0IndexUnsafe])
+		let float2_2 = float2.Subtract(uvs[t.Vertex2IndexUnsafe], uvs[t.Vertex0IndexUnsafe])
+		let num = (1.0 / (float2_1.x * float2_2.y - float2_2.x * float2_1.y));
+		let float3_3 = float3.Multiply(float3.Subtract(float3.Multiply(float2_2.y, float3_1), float3.Multiply(float2_1.y, float3_2)), num)
+		let float3_4 = float3.Multiply(float3.Subtract(float3.Multiply(float2_1.x, float3_2), float3.Multiply(float2_2.x, float3_1)), num)
+		this.tangents[t.Vertex0IndexUnsafe] = float4.Add(this.tangents[t.Vertex0IndexUnsafe], new float4(float3_3, 0))
+		binorms[t.Vertex0IndexUnsafe] = float3.Add(binorms[t.Vertex0IndexUnsafe], float3_4)
+		this.tangents[t.Vertex1IndexUnsafe] = float4.Add(this.tangents[t.Vertex1IndexUnsafe], new float4(float3_3, 0))
+		binorms[t.Vertex1IndexUnsafe] = float3.Add(binorms[t.Vertex1IndexUnsafe], float3_4)
+		this.tangents[t.Vertex2IndexUnsafe] = float4.Add(this.tangents[t.Vertex2IndexUnsafe], new float4(float3_3, 0))
+		binorms[t.Vertex2IndexUnsafe] = float3.Add(binorms[t.Vertex2IndexUnsafe], float3_4)
+	}
+	private static CalcTangent(nor: float3, tan0: float3, tan1: float3): float4 {
+		return new float4(float3.Subtract(tan0, float3.Multiply(nor, MathX.Dot(nor, tan0))).Normalized, MathX.Dot(MathX.Cross(nor, tan0), tan1) < 0.0 ? -1 : 1);
+	}
+
+	//*Defs
+	public get RawPositions(): float3[] {
+		return this.positions
+	}
+	public get RawNormals(): float3[] {
+		return this.normals
+	}
+	public get RawTangents(): float4[] {
+		return this.tangents
+	}
+	public get RawColors(): color[] {
+		return this.colors
+	}
+	public get RawUV0s(): float2[] {
+		return this.TryGetRawUV_Array(0).uv_2D
+	}
+	public get RawUV1s(): float2[] {
+		return this.TryGetRawUV_Array(1).uv_2D
+	}
+	public get RawUV2s(): float2[] {
+		return this.TryGetRawUV_Array(2).uv_2D
+	}
+	public get RawUV3s(): float2[] {
+		return this.TryGetRawUV_Array(3).uv_2D
+	}
+
+	/**@internal */
+	public GetRawUV_Array(uv: number): UV_Array {
+		if (this.uv_channels == null || uv < 0 || uv >= this.uv_channels.length) {
+			throw new Error(`Requested: ${uv}, length: ${this.uv_channels != null ? this.uvChannels.Length : 0}`);
+		}
+		return this.uv_channels[uv];
+	}
+	/**@internal */
+	public TryGetRawUV_Array(uv: number): UV_Array {
+		return this.uv_channels == null || uv < 0 || uv >= this.uv_channels.length ? new UV_Array : this.uv_channels[uv];
+	}
+
+	public GetRawUVs(uv: number): float2[] {
+		return this.GetRawUV_Array(uv).uv_2D
+	}
+
+	public GetRawUVs_3D(uv: number): float3[] {
+		return this.GetRawUV_Array(uv).uv_3D
+	}
+
+	public GetRawUVs_4D(uv: number): float4[] {
+		return this.GetRawUV_Array(uv).uv_4D
+	}
+
+	public get RawBoneBindings(): BoneBinding[] {
+		return this.boneBindings
+	}
+
+	public get RawFlags(): BitArray {
+		return this.flags
+	}
+
+	public VertexCount: number
+	public get BoneCount(): number {
+		return this.bones.length
+	}
+
+	public get UV_ChannelCount(): number {
+		let uvChannels = this.uv_channels
+		return uvChannels == null ? 0 : uvChannels.length
+	}
+
+	public TrimUVChannels(): void {
+		if (this.uv_channels == null)
+			return;
+		let length = this.uv_channels.length;
+		while (length > 0 && this.GetUV_Dimension(length - 1) == 0)
+			--length;
+		if (length == this.uv_channels.length)
+			return;
+		this.uv_channels = this.uv_channels.EnsureExactSize<UV_Array>(length, true);
+	}
+
+	public get TotalPointCount(): number {
+		let num = 0;
+		for (let submesh of this.submeshes) {
+			if (submesh instanceof PointSubmesh)
+				num += submesh.Count;
+		}
+		return num;
+	}
+	public get TotalTriangleCount(): number {
+		let num = 0;
+		for (let submesh of this.submeshes) {
+			if (submesh instanceof TriangleSubmesh)
+				num += submesh.Count;
+		}
+		return num;
+	}
+	public get TotalFaceCount(): number {
+		let num = 0;
+		for (let submesh of this.submeshes)
+			num += submesh.Count;
+		return num;
+	}
+	public VerticesVersion: number
+	public get VertexCapacity(): number {
+		let positions = this.positions;
+		return positions == null ? 0 : positions.length;
+	}
+	public set VertexCapacity(value: number) {
+		if (value < this.VertexCount)
+			throw new Error(`The set capacity (${value}) cannot hold all vertices (${this.VertexCount})`);
+		this.EnsureVertexCapacity(value);
+	}
+
+	public get FreeCapacity(): number {
+		return this.VertexCapacity - this.VertexCount
+	}
+
+	public get TrackRemovals(): boolean {
+		return this.vertexIDs != null
+	}
+	public set TrackRemovals(value: boolean) {
+		if (!value || this.TrackRemovals)
+			return;
+		this.EnsureVertexArray<int>(true, this.vertexIDs);
+		for (let index = 0; index < this.VertexCount; index++)
+			this.vertexIDs[index] = this._vertexID++;
+		for (let submesh of this.submeshes)
+			submesh?.EnableTrackRemovals();
+	}
+	public get HasNormals():boolean{
+		return this.normals != null
+	}
+	public get HasTangents():boolean{
+		return this.tangents != null
+	}
+	public get HasColors():boolean{
+		return this.colors != null
+	}
+	public get HasBoneBindings():boolean{
+		return this.boneBindings != null
+	}
+	public set HasNormals(value:boolean){
+		this.EnsureVertexArray<float3>(value, this.normals)
+	}
+	public set HasTangents(value:boolean){
+		this.EnsureVertexArray<float4>(value, this.tangents)
+	}
+	public set HasColors(value:boolean){
+		this.EnsureVertexArray<color>(value, this.colors, color.White)
+	}
+	public set HasBoneBindings(value:boolean){
+		this.EnsureVertexArray<BoneBinding>(value, this.boneBindings, new BoneBinding(this));
 	}
 }
 export class UV_Array {
