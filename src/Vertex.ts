@@ -60,7 +60,12 @@ export class Vertex implements IVertex {
 		this.UpdateIndex();
 		this.meshx.positions[this.index] = value;
 	}
-
+	public get PositionUnsafe(): float3 {
+		return this.meshx.positions[this.index];
+	}
+	public set PositionUnsafe(value: float3) {
+		this.meshx.positions[this.index] = value;
+	}
 	public get NormalUnsafe(): float3 {
 		return this.meshx.normals[this.index];
 	}
