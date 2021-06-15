@@ -1,6 +1,9 @@
 import { List, Enumerator } from "@bombitmanbomb/utils";
 import { Triangle } from "./Triangle";
 export class TriangleCollection {
+	public [Symbol.iterator]() {
+		return this._triangles[Symbol.iterator]()
+	}
 	public _triangles!: List<Triangle>;
 	public get Count(): number {
 		return this._triangles.Count;
