@@ -69,6 +69,9 @@ export class Vertex implements IVertex {
 	public get NormalUnsafe(): float3 {
 		return this.meshx.normals[this.index];
 	}
+	public set NormalUnsafe(value: float3) {
+		this.meshx.normals[this.index] = value;
+	}
 
 	public get Normal(): float3 {
 		this.UpdateIndex();
