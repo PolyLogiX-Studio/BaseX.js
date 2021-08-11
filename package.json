@@ -33,7 +33,7 @@
 	"devDependencies": {
 		"@babel/core": "^7.12.10",
 		"@babel/plugin-transform-flow-strip-types": "^7.12.1",
-		"@types/jest": "^26.0.23",
+		"@types/jest": "^27.0.0",
 		"@types/minimist": "^1.2.0",
 		"@types/node": "^16.0.0",
 		"@types/normalize-package-data": "^2.4.0",
